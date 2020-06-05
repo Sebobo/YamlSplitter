@@ -1,6 +1,5 @@
 {
     "name": "shel/yaml-splitter",
-    "type": "library",
     "description": "Splits YAML files",
     "keywords": [],
     "homepage": "https://www.helzle.it",
