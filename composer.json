@@ -1,0 +1,28 @@
+{
+    "name": "shel/yaml-splitter",
+    "type": "library",
+    "description": "Splits YAML files",
+    "keywords": [],
+    "homepage": "https://www.helzle.it",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastian Helzle",
+            "email": "sebastian@helzle.it"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.5",
+        "symfony/console": "^5.1",
+        "symfony/yaml": "^5.1"
+    },
+    "bin": [
+        "yaml-splitter.php"
+    ],
+    "autoload": {
+        "psr-4": { "Console\\": "src" }
+    },
+    "scripts": {
+        "compile": "box compile"
+    }
+}
