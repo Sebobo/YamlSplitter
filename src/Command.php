@@ -29,6 +29,7 @@ class Command extends SymfonyCommand
         $output->getFormatter()->setStyle('bold', $outputStyle);
 
         $output->writeln([
+            '',
             '==============================================================',
             '====**** Neos CMS node type YAML Splitter Console App ****====',
             '==============================================================',

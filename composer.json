@@ -26,7 +26,8 @@
     },
     "scripts": {
         "compile": "box compile",
-        "test": "rm -rf ./output/* && ./yaml-splitter.php split --package-key MyVendor.Website examples/NodeTypes.Example.yaml output",
-        "test-folders": "rm -rf ./output/* && ./yaml-splitter.php split --package-key MyVendor.Website --use-folders examples/NodeTypes.Example.yaml output"
+        "test-split": "rm -rf ./output/* && ./yaml-splitter.php split --package-key MyVendor.Website examples/split/NodeTypes.Example.yaml output",
+        "test-split-into-folders": "rm -rf ./output/* && ./yaml-splitter.php split --package-key MyVendor.Website --use-folders examples/split/NodeTypes.Example.yaml output",
+        "test-reorganize": "rm -rf ./output/* && ./yaml-splitter.php --copy reorganize examples/reorganize output"
     }
 }

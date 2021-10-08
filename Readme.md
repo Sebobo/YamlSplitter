@@ -34,7 +34,61 @@ have the standard naming and others will get names like `NodeTypes.Override.Some
     
 #### Example
 
-    ./yaml-splitter.phar split --dry-run --package-key MyVendor path/to/MyVendor.NodeTypes.yaml path/to/package
+```console
+./yaml-splitter.phar split --dry-run --package-key MyVendor path/to/MyVendor.NodeTypes.yaml path/to/package
+```
+
+
+### Reorganize the nodetypes in a Configuration folder into Neos 7.2+ nodetype subfolders
+
+With Neos 7.2 it's possible to organize nodetypes into separate folders than `Configuration`.
+It also allows you to use subfolders.
+
+With the following command you can move all `NodeTypes.*.yaml` from a `Configuration` folder into
+another folder. They will automatically be put into subfolders based on their naming scheme.
+
+So for example you have the following files in your `Configuration` folder of your site package:
+
+```console     
+Configuration
+├── NodeTypes.Content.Image.yaml
+├── NodeTypes.Content.Text.yaml
+├── NodeTypes.Document.Abstract.Page.yaml
+├── NodeTypes.Document.Home.yaml
+├── NodeTypes.Document.Page.yaml
+├── NodeTypes.Override.Content.Popup.yaml
+├── NodeTypes.Override.Mixin.Document.yaml
+└── NodeTypes.Override.Mixin.MarginMixin.yaml
+
+```
+                                                                                    
+Now you run the `reorganize` command:
+
+```console
+./yaml-splitter.phar reorganize path/to/sitepackage/Configuration path/to/sitepackage/NodeTypes
+```
+                                                                                     
+After you execute the command you will have the following structure:
+
+```console
+NodeTypes
+├── Content
+│   ├── Image.yaml
+│   └── Text.yaml
+├── Document
+│  ├── Abstract
+│  │   └── Page.yaml
+│  ├── Home.yaml
+│  └── Page.yaml
+└── Override
+    ├── Content
+    │   └── Popup.yaml
+    └── Mixin
+        ├── Document.yaml
+        └── MarginMixin.yaml
+```
+
+**Note:** If you still have multiple nodetypes inside one file, it's recommended to first run the `split` command and then `reorganize`.
 
 ## Contributing
 

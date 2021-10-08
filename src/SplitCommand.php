@@ -125,14 +125,15 @@ class SplitCommand extends Command
     }
 
     protected function writeNodeTypesToFiles(
-        string $packageKey,
-        array $nodeTypes,
-        string $outputPath,
-        bool $dryRun,
-        bool $useFolders,
-        int $indentation,
+        string          $packageKey,
+        array           $nodeTypes,
+        string          $outputPath,
+        bool            $dryRun,
+        bool            $useFolders,
+        int             $indentation,
         OutputInterface $output
-    ): void {
+    ): void
+    {
         foreach ($nodeTypes as $nodeType => $nodeTypeConfig) {
             $isAbstract = isset($nodeTypeConfig['abstract']) && $nodeTypeConfig['abstract'];
             $filename = $this->generateFileNameFromNodeType($packageKey, $nodeType, $isAbstract, $useFolders);
@@ -167,25 +168,25 @@ class SplitCommand extends Command
         $pathParts = $useFolders ? [] : ['NodeTypes'];
 
         if ($packageKey !== $nodeTypePackageKey) {
-            $pathParts[]= 'Override';
+            $pathParts[] = 'Override';
         }
 
         // Check for the occurrence of the main types.
         // Sometimes NodeTypes are label like My.Vendor:TextMixin, therefore we have to do a string comparison
         if (strpos($nodeTypeName, 'Mixin') !== false) {
-            $pathParts[]= 'Mixin';
+            $pathParts[] = 'Mixin';
         } elseif (strpos($nodeTypeName, 'Document') !== false) {
-            $pathParts[]= 'Document';
+            $pathParts[] = 'Document';
         } elseif (strpos($nodeTypeName, 'Content') !== false) {
-            $pathParts[]= 'Content';
+            $pathParts[] = 'Content';
         }
 
         if ($isAbstract) {
-            $pathParts[]= 'Abstract';
+            $pathParts[] = 'Abstract';
         }
 
         // Add last part of nodetype name as main identifier
-        $pathParts[]= array_pop($nodeTypeNameParts);
+        $pathParts[] = array_pop($nodeTypeNameParts);
 
         return implode($useFolders ? '/' : '.', $pathParts) . '.yaml';
     }
@@ -194,9 +195,10 @@ class SplitCommand extends Command
         string $filename,
         string $outputPath,
         string $nodeType,
-        array $nodeTypeConfig,
-        int $indentation
-    ): bool {
+        array  $nodeTypeConfig,
+        int    $indentation
+    ): bool
+    {
         $finalPath = $outputPath . '/' . $filename;
         $finalDirectory = dirname($finalPath);
 
