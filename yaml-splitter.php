@@ -8,7 +8,7 @@ use Console\ReorganizeCommand;
 use Console\SplitCommand;
 use Symfony\Component\Console\Application;
 
-$app = new Application();
+$app = new Application('YamlSplitter', '1.0.0');
 $app->add(new SplitCommand());
 $app->add(new ReorganizeCommand());
 $app->run();
