@@ -13,14 +13,11 @@ use Symfony\Component\Yaml\Yaml;
 class SplitCommand extends Command
 {
 
-    /**
-     *
-     */
     public function configure(): void
     {
         $this->setName('split')
             ->setDescription('Splits YAML files with Neos CMS node types into multiple individual files')
-            ->setHelp('TODO: Write help')
+            ->setHelp('Don\'t panic')
             ->addArgument(
                 'path',
                 InputArgument::REQUIRED,
@@ -50,16 +47,17 @@ class SplitCommand extends Command
             ->addOption(
                 'dry-run',
                 'd',
-                InputOption::VALUE_OPTIONAL,
-                'The path to the YAML file that should be split',
-                false
+                InputOption::VALUE_NONE,
+                'Just simulate the split'
+            )
+            ->addOption(
+                'use-folders',
+                'f',
+                InputOption::VALUE_NONE,
+                'Create subfolders for NodeTypes (requires Neos 7.2)'
             );
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     public function interact(InputInterface $input, OutputInterface $output): void
     {
         parent::interact($input, $output);
@@ -72,11 +70,6 @@ class SplitCommand extends Command
         }
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int
-     */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->init($input, $output);
@@ -85,6 +78,7 @@ class SplitCommand extends Command
         $path = $input->getArgument('path');
         $outputPath = $input->getArgument('output-path');
         $dryRun = (bool)$input->getOption('dry-run');
+        $useFolders = (bool)$input->getOption('use-folders');
         $indentation = (int)$input->getOption('indentation');
 
         $output->writeln(sprintf('<info>Selected path: %s</info>', $path));
@@ -100,21 +94,19 @@ class SplitCommand extends Command
         if ($packageNodeTypes) {
             $output->writeln('');
             $output->writeln('<info>Splitting node types matching the given package key</info>');
-            $this->writeNodeTypesToFiles($packageKey, $packageNodeTypes, $outputPath, $dryRun, $indentation, $output);
+            $this->writeNodeTypesToFiles($packageKey, $packageNodeTypes, $outputPath, $dryRun, $useFolders, $indentation, $output);
         }
 
         if ($otherNodeTypes) {
             $output->writeln('');
             $output->writeln('<info>Splitting node types not matching the given package key</info>');
-            $this->writeNodeTypesToFiles($packageKey, $otherNodeTypes, $outputPath, $dryRun, $indentation, $output);
+            $this->writeNodeTypesToFiles($packageKey, $otherNodeTypes, $outputPath, $dryRun, $useFolders, $indentation, $output);
         }
 
         return Command::SUCCESS;
     }
 
     /**
-     * @param array $nodeTypes
-     * @param string $packageKey
      * @return array[]
      */
     protected function splitNodeTypesByPackageKey(array $nodeTypes, string $packageKey): array
@@ -132,24 +124,19 @@ class SplitCommand extends Command
         return [$packageNodeTypes, $otherNodeTypes];
     }
 
-    /**
-     * @param string $packageKey
-     * @param array $nodeTypes
-     * @param string $outputPath
-     * @param bool $dryRun
-     * @param int $indentation
-     * @param OutputInterface $output
-     */
     protected function writeNodeTypesToFiles(
         string $packageKey,
         array $nodeTypes,
         string $outputPath,
         bool $dryRun,
+        bool $useFolders,
         int $indentation,
         OutputInterface $output
     ): void {
         foreach ($nodeTypes as $nodeType => $nodeTypeConfig) {
-            $filename = $this->generateFileNameFromNodeType($packageKey, $nodeType);
+            $isAbstract = isset($nodeTypeConfig['abstract']) && $nodeTypeConfig['abstract'];
+            $filename = $this->generateFileNameFromNodeType($packageKey, $nodeType, $isAbstract, $useFolders);
+
             if ($dryRun) {
                 $output->writeln(sprintf(
                     'Would write node type data for <bold>%s</bold> to <bold>%s</bold>',
@@ -172,43 +159,37 @@ class SplitCommand extends Command
         }
     }
 
-    /**
-     * @param string $packageKey
-     * @param string $nodeType
-     * @return string
-     */
-    protected function generateFileNameFromNodeType(string $packageKey, string $nodeType): string
+    protected function generateFileNameFromNodeType(string $packageKey, string $nodeType, bool $isAbstract, bool $useFolders): string
     {
         [$nodeTypePackageKey, $nodeTypeName] = explode(':', $nodeType);
+        $nodeTypeNameParts = explode('.', $nodeTypeName);
 
-        $isDocument = strpos($nodeTypeName, 'Document') !== false;
-        $isContent = strpos($nodeTypeName, 'Content') !== false;
-        $isMixin = strpos($nodeTypeName, 'Mixin') !== false;
-
-        $prefix = 'NodeTypes.';
+        $pathParts = $useFolders ? [] : ['NodeTypes'];
 
         if ($packageKey !== $nodeTypePackageKey) {
-            $prefix .= 'Override.';
+            $pathParts[]= 'Override';
         }
 
-        if ($isDocument) {
-            $prefix .= 'Document.';
-        } elseif ($isContent) {
-            $prefix .= 'Content.';
-        } elseif ($isMixin) {
-            $prefix .= 'Mixin.';
+        // Check for the occurrence of the main types.
+        // Sometimes NodeTypes are label like My.Vendor:TextMixin, therefore we have to do a string comparison
+        if (strpos($nodeTypeName, 'Mixin') !== false) {
+            $pathParts[]= 'Mixin';
+        } elseif (strpos($nodeTypeName, 'Document') !== false) {
+            $pathParts[]= 'Document';
+        } elseif (strpos($nodeTypeName, 'Content') !== false) {
+            $pathParts[]= 'Content';
         }
-        return $prefix . $nodeTypeName . '.yaml';
+
+        if ($isAbstract) {
+            $pathParts[]= 'Abstract';
+        }
+
+        // Add last part of nodetype name as main identifier
+        $pathParts[]= array_pop($nodeTypeNameParts);
+
+        return implode($useFolders ? '/' : '.', $pathParts) . '.yaml';
     }
 
-    /**
-     * @param string $filename
-     * @param string $outputPath
-     * @param string $nodeType
-     * @param array $nodeTypeConfig
-     * @param int $indentation
-     * @return bool
-     */
     protected function writeNodeTypeToYaml(
         string $filename,
         string $outputPath,
@@ -217,6 +198,13 @@ class SplitCommand extends Command
         int $indentation
     ): bool {
         $finalPath = $outputPath . '/' . $filename;
+        $finalDirectory = dirname($finalPath);
+
+        // Generate folders if necessary
+        /** @noinspection MkdirRaceConditionInspection */
+        if (!is_dir($finalDirectory) && !mkdir($finalDirectory, 0777, true)) {
+            return false;
+        }
 
         if (file_exists($finalPath)) {
             return false;
@@ -225,6 +213,7 @@ class SplitCommand extends Command
         $yaml = Yaml::dump([
             $nodeType => $nodeTypeConfig
         ], 99, $indentation);
+
         return file_put_contents($finalPath, $yaml) !== false;
     }
 }

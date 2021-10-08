@@ -1,7 +1,10 @@
 {
     "name": "shel/yaml-splitter",
     "description": "Splits YAML files",
-    "keywords": [],
+    "keywords": [
+        "neoscms",
+        "yaml"
+    ],
     "homepage": "https://www.helzle.it",
     "license": "MIT",
     "authors": [
@@ -11,7 +14,7 @@
         }
     ],
     "require": {
-        "php": ">=7.2.5",
+        "php": ">=7.3",
         "symfony/console": "^5.1",
         "symfony/yaml": "^5.1"
     },
@@ -22,6 +25,8 @@
         "psr-4": { "Console\\": "src" }
     },
     "scripts": {
-        "compile": "box compile"
+        "compile": "box compile",
+        "test": "rm -rf ./output/* && ./yaml-splitter.php split --package-key MyVendor.Website examples/NodeTypes.Example.yaml output",
+        "test-folders": "rm -rf ./output/* && ./yaml-splitter.php split --package-key MyVendor.Website --use-folders examples/NodeTypes.Example.yaml output"
     }
 }
