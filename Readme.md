@@ -8,6 +8,10 @@ Allows splitting YAML files into multiple based on node type names.
 
     ./yaml-splitter.phar list
 
+### Show options for split command
+
+    ./yaml-splitter.phar help split
+
 ### Split a file
 
     ./yaml-splitter.phar split [options] [--] <path> [<output-path>]
@@ -24,6 +28,7 @@ have the standard naming and others will get names like `NodeTypes.Override.Some
 #### Options
 
 * `dry-run` allows seeing what would happen without writing any file
+* `use-folders` splits the nodetypes into a folder structure for Neos 7.2+
 * `package-key` allows to define the main package key of your node types, so node types with different package keys would be written to `NodeTypes.Override.xyz` files.
 * `indentation` number of spaces for indentation in the resulting YAML files
     
