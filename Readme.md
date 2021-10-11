@@ -2,6 +2,35 @@
 
 Allows splitting YAML files into multiple based on node type names.
 
+## Installation
+
+### Recommended
+
+Download the Phar version of the [latest release](https://github.com/Sebobo/YamlSplitter/releases). 
+You can find it after the individual change log in the `Assets` section.
+
+Afterwards you should make the file executable by running 
+
+```console
+chmod a+x yaml-splitter.phar
+```
+
+Now you can follow the usage examples below.
+
+### Via composer 
+
+Add this tool as dependency to your project via
+
+```console
+composer require --dev shel/yaml-splitter 
+```
+
+Afterwards you can run the commands in your project by prefixing the usage examples like this:
+
+```console
+bin/yaml-splitter.php split ...
+```
+
 ## Usage
 
 ### List commands
