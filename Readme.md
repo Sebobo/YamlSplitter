@@ -25,6 +25,12 @@ Add this tool as dependency to your project via
 composer require --dev shel/yaml-splitter 
 ```
 
+Or install the package [https://getcomposer.org/doc/03-cli.md#global](globally) via
+
+```console
+composer global require shel/yaml-splitter 
+```
+
 Afterwards you can run the commands in your project by prefixing the usage examples like this:
 
 ```console
