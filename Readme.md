@@ -1,6 +1,9 @@
-# Neos CMS node type YAML file splitter
+# Neos CMS node type YAML file splitter and reorganizer
 
-Allows splitting YAML files into multiple based on node type names.
+Features:
+
+* split YAML files containing multiple nodetypes into separate files each containing one nodetype 
+* reorganize nodetypes files from the old style `Configuration` folder to the new `NodeTypes` folder and will also create subfolders based on their naming scheme
 
 ## Installation
 
